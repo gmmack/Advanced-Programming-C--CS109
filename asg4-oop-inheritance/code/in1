@@ -1,0 +1,17 @@
+define gav ellipse 10 15
+define a circle 4
+define gavin ellipse 50 70 
+define dan circle 60         
+define b polygon 10 10 30 10 40 10 50 20 60 30 60 40 60 50 50 50 40 50 30 50 10 30 5 20
+define r rectangle 600 400
+define s square 300
+define d diamond 250 350
+define t triangle 50 50 250 50 150 200
+define rt right_triangle 75 100
+define isos isosceles 75 150
+define equi equilateral 100
+draw purple r 320 240
+draw green s 320 240
+draw turquoise d 320 240
+draw magenta t 320 240
+draw blue isos 320 240

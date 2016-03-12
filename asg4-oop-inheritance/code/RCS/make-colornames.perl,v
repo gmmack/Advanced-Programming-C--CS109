@@ -1,0 +1,88 @@
+head	1.3;
+access;
+symbols;
+locks;
+comment	@# @;
+
+
+1.3
+date	2014.05.02.23.54.59;	author -;	state -;
+branches;
+next	1.2;
+
+1.2
+date	2014.05.02.23.41.58;	author -;	state -;
+branches;
+next	1.1;
+
+1.1
+date	2014.05.02.23.41.39;	author -;	state -;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@-
+@
+text
+@#!/usr/bin/perl
+# $Id: make-colornames.perl,v 1.2 2014-05-02 16:41:58-07 - - $
+use strict;
+use warnings;
+
+my %colors;
+my $file = "/usr/share/X11/rgb.txt";
+open RGB_TXT, "<$file" or die "$0: $file: $!";
+while (my $line = <RGB_TXT>) {
+   $line =~ m/^\s*(\d+)\s+(\d+)\s+(\d+)\s+(.*)/
+         or die "$0: invalid line: $line";
+   my ($red, $green, $blue, $name) = ($1, $2, $3, $4);
+   $name =~ s/\s+/-/g;
+   $colors{$name} = [$red, $green, $blue];
+}
+close RGB_TXT;
+
+my $cppgen = "colortable.cppgen";
+open CPPGEN, ">$cppgen" or die "$0: $cppgen: $!";
+print "open $cppgen: OK\n";
+printf CPPGEN "const map<string,color> color_names = {\n";
+printf CPPGEN "   {%-24s, color (%3d, %3d, %3d)},\n",
+                  "\"$_\"", @@{$colors{$_}}
+       for sort {lc $a cmp lc $b} keys %colors;
+print CPPGEN "};\n";
+close CPPGEN;
+
+@
+
+
+1.2
+log
+@-
+@
+text
+@d2 1
+a2 1
+# $Id: make-colornames.perl,v 1.1 2014-05-02 16:41:39-07 - - $
+d22 1
+a22 1
+printf CPPGEN "   {%-24s, {%3d, %3d, %3d}},\n",
+@
+
+
+1.1
+log
+@-
+@
+text
+@d2 1
+a2 1
+# $Id: colornames-make.perl,v 1.3 2014-04-25 17:03:07-07 - - $
+d24 1
+a24 1
+       for sort {lc $a <=> lc $b} keys %colors;
+@

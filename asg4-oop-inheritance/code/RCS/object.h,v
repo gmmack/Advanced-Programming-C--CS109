@@ -1,0 +1,296 @@
+head	1.6;
+access;
+symbols;
+locks;
+comment	@ * @;
+
+
+1.6
+date	2014.05.08.23.29.59;	author -;	state -;
+branches;
+next	1.5;
+
+1.5
+date	2014.05.08.23.22.43;	author -;	state -;
+branches;
+next	1.4;
+
+1.4
+date	2014.05.06.00.09.28;	author -;	state -;
+branches;
+next	1.3;
+
+1.3
+date	2014.05.03.01.39.21;	author -;	state -;
+branches;
+next	1.2;
+
+1.2
+date	2014.05.02.03.43.13;	author -;	state -;
+branches;
+next	1.1;
+
+1.1
+date	2014.05.02.03.14.06;	author -;	state -;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@-
+@
+text
+@// $Id: object.h,v 1.5 2014-05-08 16:22:43-07 - - $
+
+#include <memory>
+using namespace std;
+
+#include <GL/freeglut.h>
+
+#include "rgbcolor.h"
+#include "shape.h"
+
+class object {
+   private:
+      shared_ptr<shape> pshape;
+      rgbcolor color;
+      vertex center;
+   public:
+      // Default copiers, movers, dtor all OK.
+      void draw();
+      void move (GLfloat delta_x, GLfloat delta_y);
+};
+
+@
+
+
+1.5
+log
+@-
+@
+text
+@d1 1
+a1 1
+// $Id$
+d13 1
+a13 1
+      shared_ptr<shape> shape;
+@
+
+
+1.4
+log
+@-
+@
+text
+@d1 1
+a1 1
+// $Id: object.h,v 1.3 2014-05-02 18:39:21-07 - - $
+a2 5
+#ifndef __OBJECT_H__
+#define __OBJECT_H__
+
+#include <iomanip>
+#include <iostream>
+a3 2
+#include <utility>
+#include <vector>
+d6 1
+a6 29
+#include "graphics.h"
+
+//
+// Objects constitute a single-inheritance hierarchy, summarized
+// here, with the superclass listed first, and subclasses indented
+// under their immediate superclass.
+//
+// object
+//    text
+//    shape
+//       line
+//       point
+//       ellipse
+//          circle
+//       polygon
+//          rectangle
+//             square
+//          diamond
+//          triangle
+//             right_triangle
+//             left_triangle
+//             isosceles_triangle
+//             equilateral_triangle
+//
+
+class object;
+typedef struct {GLfloat xpos; GLfloat ypos; } vertex;
+typedef vector<vertex> vertex_list;
+typedef shared_ptr<object> object_ptr; 
+d8 2
+a9 3
+//
+// Abstract base class for all shapes in this system.
+//
+a11 1
+   friend ostream& operator<< (ostream& out, const object&);
+d13 7
+a19 60
+      object (const object&) = delete; // Prevent copying.
+      object& operator= (const object&) = delete; // Prevent copying.
+   protected:
+      inline object(); // Only subclass may instantiate.
+   public:
+      virtual ~object() {}
+      virtual void draw (const vertex& location) const = 0;
+      virtual void show (ostream&) const;
+};
+
+//
+// Class for printing text.
+//
+
+class text: public object {
+   protected:
+      void* glut_bitmap_font = nullptr;
+      // GLUT_BITMAP_8_BY_13
+      // GLUT_BITMAP_9_BY_15
+      // GLUT_BITMAP_HELVETICA_10
+      // GLUT_BITMAP_HELVETICA_12
+      // GLUT_BITMAP_HELVETICA_18 
+      // GLUT_BITMAP_TIMES_ROMAN_10
+      // GLUT_BITMAP_TIMES_ROMAN_24
+      string textdata;
+   public:
+      text (void* glut_bitmap_font, const string& textdata);
+      virtual void draw (const vertex&) const override;
+      virtual void show (ostream&) const override;
+};
+
+//
+// Shape of a geometric object.
+//
+
+class shape: public object {
+   protected:
+      GLfloat thick = 1;
+      shape (const GLfloat& thick); // Only subclass may instantiate.
+   public:
+      virtual void show (ostream&) const override;
+};
+
+//
+// Classes for ellipse and circle.
+//
+
+class ellipse: public shape {
+   protected:
+      vertex dimension;
+   public:
+      ellipse (const GLfloat& width, const GLfloat& height,
+               const GLfloat& thick);
+      virtual void draw (const vertex&) const override;
+      virtual void show (ostream&) const override;
+};
+
+class circle: public ellipse {
+   public:
+      circle (const GLfloat& diameter, const GLfloat& thick);
+a21 44
+//
+// Class polygon.
+//
+
+class polygon: public shape {
+   protected:
+      const vertex_list vertices;
+      polygon (const vertex_list& vertices, const GLfloat& thick,
+               vertex center);
+   public:
+      polygon (const vertex_list& vertices, const GLfloat& thick);
+      virtual void draw (const vertex&) const override;
+      virtual void show (ostream&) const override;
+};
+
+//
+// Classes rectangle, square, and line..
+//
+
+class rectangle: public polygon {
+   public:
+      rectangle (const GLfloat& width, const GLfloat& height,
+                 const GLfloat& thick);
+};
+
+class square: public rectangle {
+   public:
+      square (const GLfloat& width, const GLfloat& thick);
+};
+
+class line: public polygon {
+   public:
+      line (const GLfloat& length, const GLfloat& thick);
+};
+
+class diamond: public polygon {
+   public:
+      diamond (const GLfloat width, const GLfloat height);
+};
+
+ostream& operator<< (ostream& out, const object&);
+
+#endif
+
+@
+
+
+1.3
+log
+@-
+@
+text
+@d1 1
+a1 1
+// $Id: object.h,v 1.2 2014-05-01 20:43:13-07 - - $
+d23 2
+a29 1
+//          line
+d31 5
+@
+
+
+1.2
+log
+@-
+@
+text
+@d1 1
+a1 1
+// $Id$
+a5 3
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+d13 2
+@
+
+
+1.1
+log
+@-
+@
+text
+@d1 1
+a1 1
+// $Id: object.h,v 1.14 2013-07-29 17:22:09-07 - - $
+a10 1
+#include <deque>
+d13 1
+d35 1
+a35 1
+typedef deque<vertex> vertex_list;
+@

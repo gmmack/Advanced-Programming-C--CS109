@@ -1,0 +1,543 @@
+head	1.8;
+access;
+symbols;
+locks;
+comment	@// @;
+
+
+1.8
+date	2014.05.08.23.29.59;	author -;	state -;
+branches;
+next	1.7;
+
+1.7
+date	2014.05.08.23.22.43;	author -;	state -;
+branches;
+next	1.6;
+
+1.6
+date	2014.05.03.01.39.21;	author -;	state -;
+branches;
+next	1.5;
+
+1.5
+date	2014.05.02.03.14.06;	author -;	state -;
+branches;
+next	1.4;
+
+1.4
+date	2014.05.02.02.29.58;	author -;	state -;
+branches;
+next	1.3;
+
+1.3
+date	2014.05.02.02.29.43;	author -;	state -;
+branches;
+next	1.2;
+
+1.2
+date	2014.05.02.01.56.43;	author -;	state -;
+branches;
+next	1.1;
+
+1.1
+date	2014.05.02.01.10.30;	author -;	state -;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.8
+log
+@-
+@
+text
+@// $Id: object.cpp,v 1.7 2014-05-08 16:22:43-07 - - $
+
+#include "object.h"
+
+void object::draw() {
+   pshape->draw (center, color);
+}
+
+void object::move (GLfloat delta_x, GLfloat delta_y) {
+   center.xpos += delta_x;
+   center.ypos += delta_y;
+}
+
+@
+
+
+1.7
+log
+@-
+@
+text
+@d1 1
+a1 1
+// $Id$
+d6 1
+a6 1
+   shape->draw (center, color);
+@
+
+
+1.6
+log
+@-
+@
+text
+@d1 1
+a1 5
+// $Id: object.cpp,v 1.5 2014-05-01 20:14:06-07 - - $
+
+#include <typeinfo>
+#include <unordered_map>
+using namespace std;
+a3 123
+#include "util.h"
+
+#define VOIDTHIS reinterpret_cast<const void*>(this)
+
+#define WARNING_UNUSED_PARAMETER(X) \
+        cout << "WARNING_UNUSED_PARAMETER(" << #X << ")" << endl; \
+        (void) X;
+
+static unordered_map<void*,string> fontname {
+   {GLUT_BITMAP_8_BY_13       , "Fixed-8x13"    },
+   {GLUT_BITMAP_9_BY_15       , "Fixed-9x15"    },
+   {GLUT_BITMAP_HELVETICA_10  , "Helvetica-10"  },
+   {GLUT_BITMAP_HELVETICA_12  , "Helvetica-12"  },
+   {GLUT_BITMAP_HELVETICA_18  , "Helvetica-18"  },
+   {GLUT_BITMAP_TIMES_ROMAN_10, "Times-Roman-10"},
+   {GLUT_BITMAP_TIMES_ROMAN_24, "Times-Roman-24"},
+};
+
+static unordered_map<string,void*> fontcode {
+   {"Fixed-8x13"    , GLUT_BITMAP_8_BY_13       },
+   {"Fixed-9x15"    , GLUT_BITMAP_9_BY_15       },
+   {"Helvetica-10"  , GLUT_BITMAP_HELVETICA_10  },
+   {"Helvetica-12"  , GLUT_BITMAP_HELVETICA_12  },
+   {"Helvetica-18"  , GLUT_BITMAP_HELVETICA_18  },
+   {"Times-Roman-10", GLUT_BITMAP_TIMES_ROMAN_10},
+   {"Times-Roman-24", GLUT_BITMAP_TIMES_ROMAN_24},
+};
+
+ostream& operator<< (ostream& out, const vertex& where) {
+   out << "(" << where.xpos << "," << where.ypos << ")";
+   return out;
+}
+
+object::object() {
+   TRACE ('c', VOIDTHIS);
+}
+
+text::text (void* glut_bitmap_font, const string& textdata):
+      glut_bitmap_font(glut_bitmap_font), textdata(textdata) {
+   TRACE ('c', VOIDTHIS);
+}
+
+shape::shape (const GLfloat& thick): thick(thick) {
+   TRACE ('c', VOIDTHIS);
+}
+
+ellipse::ellipse (const GLfloat& width, const GLfloat& height,
+                  const GLfloat& thick):
+      shape(thick), dimension ({width, height}) {
+   TRACE ('c', VOIDTHIS);
+}
+
+circle::circle (const GLfloat& diameter, const GLfloat& thick):
+      ellipse (diameter, diameter, thick) {
+   TRACE ('c', VOIDTHIS);
+}
+
+polygon::polygon (const vertex_list& vertices, const GLfloat& thick,
+                  vertex center): shape(thick) {
+   TRACE ('c', VOIDTHIS);
+   WARNING_UNUSED_PARAMETER(vertices);
+   WARNING_UNUSED_PARAMETER(center);
+}
+
+
+polygon::polygon (const vertex_list& vertices, const GLfloat& thick):
+      shape(thick), vertices(vertices) {
+   TRACE ('c', VOIDTHIS);
+}
+
+rectangle::rectangle (const GLfloat& width, const GLfloat& height,
+                      const GLfloat& thick):
+      polygon (vertex_list ({{0, height}, {width, 0}, {0, -height}}),
+               thick) {
+   TRACE ('c', VOIDTHIS);
+}
+
+square::square (const GLfloat& width, const GLfloat& thick):
+      rectangle (width, width, thick) {
+   TRACE ('c', VOIDTHIS);
+}
+
+line::line (const GLfloat& length, const GLfloat& thick):
+      polygon (vertex_list ({{length, 0}}), thick) {
+   TRACE ('c', VOIDTHIS);
+}
+
+void text::draw (const vertex& center) const {
+   TRACE ('d', VOIDTHIS << "(" << center << ")");
+   WARNING_UNUSED_PARAMETER(center);
+}
+
+void ellipse::draw (const vertex& center) const {
+   TRACE ('d', VOIDTHIS << "(" << center << ")");
+   WARNING_UNUSED_PARAMETER(center);
+}
+
+void polygon::draw (const vertex& center) const {
+   TRACE ('d', VOIDTHIS << "(" << center << ")");
+   WARNING_UNUSED_PARAMETER(center);
+}
+
+void object::show (ostream& out) const {
+   out << VOIDTHIS << "->" << demangle (*this) << ": ";
+}
+
+void text::show (ostream& out) const {
+   object::show (out);
+   out << glut_bitmap_font << "(" << fontname[glut_bitmap_font]
+       << ") \"" << textdata << "\"";
+}
+
+void shape::show (ostream& out) const {
+   object::show (out);
+   out << thick << ": ";
+}
+
+void ellipse::show (ostream& out) const {
+   shape::show (out);
+   out << "{";
+   out << dimension;
+   out << "}";
+}
+d5 2
+a6 3
+void polygon::show (ostream& out) const {
+   shape::show (out);
+   out << "{" << vertices << "}";
+d9 3
+a11 3
+ostream& operator<< (ostream& out, const object& obj) {
+   obj.show (out);
+   return out;
+@
+
+
+1.5
+log
+@-
+@
+text
+@d1 1
+a1 1
+// $Id: object.cpp,v 1.4 2014-05-01 19:29:58-07 - - $
+d16 25
+d42 1
+a42 1
+   //TRACE ('c', VOIDTHIS);
+d47 1
+a47 1
+   //TRACE ('c', VOIDTHIS);
+d51 1
+a51 1
+   //TRACE ('c', VOIDTHIS);
+d57 1
+a57 1
+   //TRACE ('c', VOIDTHIS);
+d62 1
+a62 1
+   //TRACE ('c', VOIDTHIS);
+d67 1
+a67 1
+   //TRACE ('c', VOIDTHIS);
+d75 1
+a75 1
+   //TRACE ('c', VOIDTHIS);
+d82 1
+a82 1
+   //TRACE ('c', VOIDTHIS);
+d87 1
+a87 1
+   //TRACE ('c', VOIDTHIS);
+d92 1
+a92 1
+   //TRACE ('c', VOIDTHIS);
+d96 1
+a96 1
+   //TRACE ('d', VOIDTHIS << "(" << center << ")");
+d101 1
+a101 1
+   //TRACE ('d', VOIDTHIS << "(" << center << ")");
+d106 1
+a106 1
+   //TRACE ('d', VOIDTHIS << "(" << center << ")");
+a115 9
+   static unordered_map<void*,string> fontname {
+      {GLUT_BITMAP_8_BY_13       , "GLUT_BITMAP_8_BY_13"},
+      {GLUT_BITMAP_9_BY_15       , "GLUT_BITMAP_9_BY_15"},
+      {GLUT_BITMAP_HELVETICA_10  , "GLUT_BITMAP_HELVETICA_10"},
+      {GLUT_BITMAP_HELVETICA_12  , "GLUT_BITMAP_HELVETICA_12"},
+      {GLUT_BITMAP_HELVETICA_18  , "GLUT_BITMAP_HELVETICA_18"},
+      {GLUT_BITMAP_TIMES_ROMAN_10, "GLUT_BITMAP_TIMES_ROMAN_10"},
+      {GLUT_BITMAP_TIMES_ROMAN_24, "GLUT_BITMAP_TIMES_ROMAN_24"},
+   };
+d127 3
+a129 1
+   out << "{" << dimension << "}";
+@
+
+
+1.4
+log
+@-
+@
+text
+@d1 1
+a1 1
+// $Id: object.cpp,v 1.3 2014-05-01 19:29:43-07 - - $
+d4 1
+a4 1
+
+d10 6
+d17 1
+a17 1
+   TRACE ('c', *this);
+d22 1
+a22 1
+   TRACE ('c', *this);
+d26 1
+a26 1
+   TRACE ('c', *this);
+d32 1
+a32 1
+   TRACE ('c', *this);
+d37 1
+a37 1
+   TRACE ('c', *this);
+d41 4
+a44 2
+                  vertex center) {
+   TRACE ('c', *this);
+d49 2
+a50 2
+      shape(thick), coordinates(vertices) {
+   TRACE ('c', *this);
+d57 1
+a57 1
+   TRACE ('c', *this);
+d62 1
+a62 1
+   TRACE ('c', *this);
+d67 1
+a67 1
+   TRACE ('c', *this);
+d70 3
+a72 3
+void text::draw (ostream& out, const xyvertices& vertices,
+                 const GLfloat& angle) {
+   TRACE ('d', *this << vertices);
+d75 3
+a77 3
+void ellipse::draw (ostream& out, const xyvertices& vertices,
+                    const GLfloat& angle) {
+   TRACE ('d', *this << vertices);
+d80 3
+a82 3
+void polygon::draw (ostream& out, const xyvertices& vertices,
+                    const GLfloat& angle) {
+   TRACE ('d', *this << vertices);
+d86 1
+a86 1
+   out << this << "->" << demangle (*this) << ": ";
+d91 1
+a91 1
+   static unordered_map<string,void*> fontname {
+d99 1
+a99 1
+   }
+@
+
+
+1.3
+log
+@-
+@
+text
+@d1 1
+a1 1
+// $Id: object.cpp,v 1.2 2014-05-01 18:56:43-07 - - $
+a9 2
+#define TRACE ('c', (OBJ) TRACE ('c', "new: " << endl << *this)
+
+@
+
+
+1.2
+log
+@-
+@
+text
+@d1 1
+a1 1
+// $Id: object.cpp,v 1.1 2014-05-01 18:10:30-07 - - $
+d10 1
+a10 1
+#define NEW_TRACE(OBJ) TRACE ('c', "new: " << endl << *this)
+d13 1
+a13 1
+   NEW_TRACE (*this);
+d16 3
+a18 3
+text::text (const string& font, const GLfloat& size, const string& data):
+      fontname(font), fontsize(size), textdata(data) {
+   NEW_TRACE (*this);
+d22 1
+a22 1
+   NEW_TRACE (*this);
+d28 1
+a28 1
+   NEW_TRACE (*this);
+d33 1
+a33 1
+   NEW_TRACE (*this);
+d36 9
+a44 3
+polygon::polygon (const coordlist& coords, const GLfloat& thick):
+      shape(thick), coordinates(coords) {
+   NEW_TRACE (*this);
+d49 1
+a49 1
+      polygon (coordlist ({{0, height}, {width, 0}, {0, -height}}),
+d51 1
+a51 1
+   NEW_TRACE (*this);
+d56 1
+a56 1
+   NEW_TRACE (*this);
+d60 2
+a61 2
+      polygon (coordlist ({{length, 0}}), thick) {
+   NEW_TRACE (*this);
+d64 1
+a64 15
+#define DELETE_TRACE(OBJ) TRACE ('c', "delete: " << endl << *this)
+object   ::~object()    { DELETE_TRACE (*this); }
+text     ::~text()      { DELETE_TRACE (*this); }
+shape    ::~shape()     { DELETE_TRACE (*this); }
+ellipse  ::~ellipse()   { DELETE_TRACE (*this); }
+circle   ::~circle()    { DELETE_TRACE (*this); }
+polygon  ::~polygon()   { DELETE_TRACE (*this); }
+rectangle::~rectangle() { DELETE_TRACE (*this); }
+square   ::~square()    { DELETE_TRACE (*this); }
+line     ::~line()      { DELETE_TRACE (*this); }
+
+#define DRAW_TRACE(COORDS,ANGLE,OBJ) \
+        TRACE ('d', "draw: " << COORDS << " " << ANGLE << endl << OBJ)
+
+void text::draw (ostream& out, const xycoords& coords,
+d66 1
+a66 2
+   DRAW_TRACE (coords, angle, *this);
+   out << "Generate Postscript code here." << endl;
+d69 1
+a69 1
+void ellipse::draw (ostream& out, const xycoords& coords,
+d71 1
+a71 2
+   DRAW_TRACE (coords, angle, *this);
+   out << "Generate Postscript code here." << endl;
+d74 1
+a74 1
+void polygon::draw (ostream& out, const xycoords& coords,
+d76 1
+a76 2
+   DRAW_TRACE (coords, angle, *this);
+   out << "Generate Postscript code here." << endl;
+d85 11
+a95 1
+   out << fontname << "[" << fontsize << "] \"" << textdata << "\"";
+d110 1
+a110 1
+   out << "{" << coordinates << "}";
+@
+
+
+1.1
+log
+@-
+@
+text
+@d1 1
+a1 1
+// $Id: object.cpp,v 1.40 2013-07-26 14:59:27-07 - - $
+d16 1
+a16 1
+text::text (const string &font, const points &size, const string &data):
+d21 1
+a21 1
+shape::shape (const points &thick): thick(thick) {
+d25 2
+a26 2
+ellipse::ellipse (const inches &width, const inches &height,
+                  const points &thick):
+d31 1
+a31 1
+circle::circle (const inches &diameter, const points &thick):
+d36 1
+a36 1
+polygon::polygon (const coordlist &coords, const points &thick):
+d41 2
+a42 2
+rectangle::rectangle (const inches &width, const inches &height,
+                      const points &thick):
+d48 1
+a48 1
+square::square (const inches &width, const points &thick):
+d53 1
+a53 1
+line::line (const inches &length, const points &thick):
+a57 1
+
+d72 2
+a73 2
+void text::draw (ostream &out, const xycoords &coords,
+                 const degrees &angle) {
+d78 2
+a79 2
+void ellipse::draw (ostream &out, const xycoords &coords,
+                    const degrees &angle) {
+d84 2
+a85 2
+void polygon::draw (ostream &out, const xycoords &coords,
+                    const degrees &angle) {
+d90 1
+a90 2
+
+void object::show (ostream &out) const {
+d94 1
+a94 1
+void text::show (ostream &out) const {
+d99 1
+a99 1
+void shape::show (ostream &out) const {
+d104 1
+a104 1
+void ellipse::show (ostream &out) const {
+d109 1
+a109 1
+void polygon::show (ostream &out) const {
+d114 1
+a114 1
+ostream &operator<< (ostream &out, const object &obj) {
+@

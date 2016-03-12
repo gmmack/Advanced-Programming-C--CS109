@@ -1,0 +1,76 @@
+head	1.2;
+access;
+symbols;
+locks;
+comment	@ * @;
+
+
+1.2
+date	2014.05.07.20.30.34;	author -;	state -;
+branches;
+next	1.1;
+
+1.1
+date	2014.05.03.01.39.21;	author -;	state -;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@-
+@
+text
+@
+#include <map>
+#include <string>
+using namespace std;
+
+#include "graphics.h"
+
+typedef unsigned char uchar;
+struct rgbcolor {
+   union {
+      uchar ubvec[3];
+      struct {
+         uchar red;
+         uchar green;
+         uchar blue;
+      };
+   };
+   explicit rgbcolor(): red(0), green(0), blue(0) {}
+   explicit rgbcolor (uchar red, uchar green, uchar blue):
+               red(red), green(green), blue(blue) {}
+   explicit rgbcolor (const string&);
+   const GLubyte* ubvec3() { return ubvec; }
+   operator string() const;
+};
+
+extern const std::map<std::string,rgbcolor> color_names;
+
+@
+
+
+1.1
+log
+@-
+@
+text
+@d9 1
+a9 1
+struct color {
+d18 2
+a19 2
+   explicit color(): red(0), green(0), blue(0) {}
+   explicit color (uchar red, uchar green, uchar blue):
+d21 1
+a21 1
+   explicit color (const string&);
+d26 1
+a26 1
+extern const std::map<std::string,color> color_names;
+@

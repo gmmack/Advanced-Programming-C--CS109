@@ -1,0 +1,82 @@
+head	1.2;
+access;
+symbols;
+locks;
+comment	@// @;
+
+
+1.2
+date	2014.05.02.01.56.35;	author -;	state -;
+branches;
+next	1.1;
+
+1.1
+date	2014.05.02.01.17.30;	author -;	state -;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@-
+@
+text
+@// $Id: trace.cpp,v 1.1 2014-05-01 18:17:30-07 - - $
+
+#include <climits>
+#include <iostream>
+#include <limits>
+#include <vector>
+
+using namespace std;
+
+#include "trace.h"
+
+typedef vector<char> boolvec;
+boolvec traceflags::flags (UCHAR_MAX + 1, false);
+const boolvec trueflags (UCHAR_MAX + 1, true);
+
+void traceflags::setflags (const string& optflags) {
+   for (string::const_iterator itor = optflags.begin();
+        itor != optflags.end(); ++itor) {
+      if (*itor == '@@') {
+         flags = trueflags;
+      }else {
+         flags[*itor] = true;
+      }
+   }
+   // Note that TRACE can trace setflags.
+   TRACE ('t',  "optflags = " << optflags);
+}
+
+//
+// getflag -
+//    Check to see if a certain flag is on.
+//
+
+bool traceflags::getflag (char flag) {
+   // Bug alert:
+   // Don't TRACE this function or the stack will blow up.
+   bool result = flags[flag];
+   return result;
+}
+
+@
+
+
+1.1
+log
+@-
+@
+text
+@d1 1
+a1 1
+// $Id: trace.cpp,v 1.3 2013-07-18 15:01:21-07 - - $
+d16 1
+a16 1
+void traceflags::setflags (const string &optflags) {
+@

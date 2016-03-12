@@ -1,0 +1,4 @@
+define gavin text Times-Roman-24 this is a string
+define dan text Times-Roman-10 ANOTHER STRING!!!!
+draw red gavin 320 240
+draw green dan 320 440

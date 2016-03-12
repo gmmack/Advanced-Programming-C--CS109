@@ -1,0 +1,46 @@
+head	1.1;
+access;
+symbols;
+locks;
+comment	@# @;
+
+
+1.1
+date	2014.05.08.21.02.41;	author -;	state -;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@-
+@
+text
+@#!/usr/bin/perl
+# $Id: make-colortable.perl,v 1.4 2014-05-07 13:31:21-07 - - $
+use strict;
+use warnings;
+
+my %colors;
+my $file = "/usr/share/X11/rgb.txt";
+open RGB_TXT, "<$file" or die "$0: $file: $!";
+while (my $line = <RGB_TXT>) {
+   $line =~ m/^\s*(\d+)\s+(\d+)\s+(\d+)\s+(.*)/
+         or die "$0: invalid line: $line";
+   my ($red, $green, $blue, $name) = ($1, $2, $3, $4);
+   $name =~ s/\s+/-/g;
+   $colors{$name} = [$red, $green, $blue];
+}
+close RGB_TXT;
+
+print "const map<string,rgbcolor> color_names = {\n";
+printf "   {%-24s, rgbcolor (%3d, %3d, %3d)},\n",
+                  "\"$_\"", @@{$colors{$_}}
+       for sort {lc $a cmp lc $b} keys %colors;
+print "};\n";
+
+@
